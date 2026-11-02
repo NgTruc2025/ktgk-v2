@@ -55,7 +55,7 @@ export async function teacherGoogleAuth(idToken: string): Promise<{
     }
 
     // 1. Verify Google ID token strictly via Firebase Admin SDK
-    const decodedToken = await adminAuth.verifyIdToken(idToken, true);
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
 
     if (!decodedToken.email) {
       return { success: false, error: 'Tài khoản Google không cung cấp email' };
