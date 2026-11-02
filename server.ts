@@ -28,9 +28,10 @@ import {
   syncAllToSheetsService,
   getLogsService,
   getStatsService,
-  addAuditLog
+  addAuditLog,
+  resetStudentPasscodeService
 } from './src/server/examService.ts';
-import { verifyTeacherSession, revokeSession } from './src/server/authService.ts';
+import { verifyTeacherSession, revokeSession, teacherGoogleAuth } from './src/server/authService.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -143,6 +144,28 @@ app.post('/api/exam/submit', async (req, res) => {
 // 2. TEACHER ADMIN APIS (PROTECTED)
 // ==========================================
 
+// Google Auth
+app.post('/api/admin/google-auth', async (req, res) => {
+  try {
+    const { idToken } = req.body || {};
+    const result = await teacherGoogleAuth(idToken);
+
+    if (!result.success) {
+      return res.status(401).json(result);
+    }
+
+    // Set HttpOnly Secure Cookie
+    if (result.token) {
+      const cookieValue = `teacher_session=${result.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`;
+      res.setHeader('Set-Cookie', cookieValue);
+    }
+
+    return res.status(200).json(result);
+  } catch (err: any) {
+    return res.status(500).json({ success: false, error: err.message || 'Lỗi xác thực Google' });
+  }
+});
+
 // Logout
 app.post('/api/admin/logout', async (req, res) => {
   const token = req.cookies?.teacher_session;
@@ -212,6 +235,17 @@ app.post('/api/admin/students', requireTeacherAuth, async (req, res) => {
 app.post('/api/admin/students/import', requireTeacherAuth, async (req, res) => {
   try {
     const result = await importStudentsService(req.body?.students || []);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/students/reset-passcode', requireTeacherAuth, async (req, res) => {
+  try {
+    const { studentId } = req.body || {};
+    const result = await resetStudentPasscodeService(studentId);
+    if (!result.success) return res.status(400).json(result);
     res.json(result);
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
