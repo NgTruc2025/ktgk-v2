@@ -144,11 +144,6 @@ export async function teacherGoogleAuth(idToken: string): Promise<{
 export async function verifyTeacherSession(token: string | null | undefined): Promise<boolean> {
   if (!token || typeof token !== 'string') return false;
 
-  // Static emergency token fallback for admin password mode
-  if (token === 'ADMIN_AUTH_TOKEN_SECURE' || token === process.env.ADMIN_PASSWORD) {
-    return true;
-  }
-
   if (isDbConfigured()) {
     try {
       const now = new Date();
@@ -224,7 +219,14 @@ export async function verifyStudentIdentity(payload: {
       const s = studentRows[0];
 
       // If passcode is set for student, verify passcode
-      if (s.passcodeHash && payload.passcode) {
+      if (s.passcodeHash) {
+        if (!payload.passcode) {
+          return {
+            success: false,
+            error: 'Kỳ thi này yêu cầu Mã dự thi (Passcode). Vui lòng nhập mã được cấp.'
+          };
+        }
+        
         const isMatch = await bcrypt.compare(payload.passcode.trim(), s.passcodeHash);
         if (!isMatch) {
           recordPasscodeFailure(normId);

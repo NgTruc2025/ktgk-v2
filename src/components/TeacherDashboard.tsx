@@ -53,6 +53,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('ALL');
   const [codeFilter, setCodeFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'LIVE'>('ALL');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
 
   // Modals
@@ -60,6 +61,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const [adjustScoreModal, setAdjustScoreModal] = useState<{ attemptId: string; studentName: string; currentScore: number } | null>(null);
   const [adjustNewScore, setAdjustNewScore] = useState('');
   const [adjustReason, setAdjustReason] = useState('');
+  const [studentPasscodeModal, setStudentPasscodeModal] = useState<{ studentId: string; fullName: string; passcode: string } | null>(null);
 
   // Add / Import student modal
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
@@ -125,7 +127,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+    // Auto refresh for live monitoring every 30 seconds if on results tab
+    const interval = setInterval(() => {
+      if (activeTab === 'results' && !loading) {
+        fetchAllData();
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [activeTab]);
 
   // Filtered and sorted results
   const filteredResults = results
@@ -134,9 +143,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                           item.studentId.toLowerCase().includes(searchTerm.toLowerCase());
       const matchClass = classFilter === 'ALL' || item.className === classFilter;
       const matchCode = codeFilter === 'ALL' || item.examCode === codeFilter;
-      return matchSearch && matchClass && matchCode;
+      const matchStatus = statusFilter === 'ALL' || item.status === 'in_progress';
+      return matchSearch && matchClass && matchCode && matchStatus;
     })
     .sort((a, b) => {
+      if (statusFilter === 'LIVE') {
+        // Sort by start time for live
+        const timeA = new Date(a.startTime).getTime();
+        const timeB = new Date(b.startTime).getTime();
+        return timeB - timeA;
+      }
       const scoreA = a.totalScore ?? 0;
       const scoreB = b.totalScore ?? 0;
       return sortOrder === 'desc' ? scoreB - scoreA : scoreA - scoreB;
@@ -485,6 +501,27 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           {/* Controls: Search, Filter, Sort, Export */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+              {/* Tab Toggle: All vs Live */}
+              <div className="flex bg-slate-100 p-1 rounded-xl gap-1">
+                <button
+                  onClick={() => setStatusFilter('ALL')}
+                  className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
+                    statusFilter === 'ALL' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Tất cả bài nộp
+                </button>
+                <button
+                  onClick={() => setStatusFilter('LIVE')}
+                  className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                    statusFilter === 'LIVE' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  <Activity className={`w-3 h-3 ${statusFilter === 'LIVE' ? 'animate-pulse' : ''}`} />
+                  Giám sát Live ({results.filter(r => r.status === 'in_progress').length})
+                </button>
+              </div>
+
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -523,12 +560,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
               </select>
 
               {/* Sort score */}
-              <button
-                onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
-                className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 font-semibold text-slate-700 flex items-center gap-1 cursor-pointer"
-              >
-                <span>Điểm: {sortOrder === 'desc' ? 'Cao -> Thấp' : 'Thấp -> Cao'}</span>
-              </button>
+              {statusFilter === 'ALL' && (
+                <button
+                  onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+                  className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 font-semibold text-slate-700 flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Điểm: {sortOrder === 'desc' ? 'Cao -> Thấp' : 'Thấp -> Cao'}</span>
+                </button>
+              )}
             </div>
 
             {/* Actions: Export CSV & Print */}
@@ -562,11 +601,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                     <th className="py-3 px-3">Mã HS</th>
                     <th className="py-3 px-3 text-center">Lớp</th>
                     <th className="py-3 px-3 text-center">Mã đề</th>
-                    <th className="py-3 px-3 text-center">MCQ (6đ)</th>
-                    <th className="py-3 px-3 text-center">TF (4đ)</th>
-                    <th className="py-3 px-3 text-center">Tổng điểm</th>
+                    <th className="py-3 px-3 text-center">{statusFilter === 'LIVE' ? 'Bắt đầu' : 'MCQ (6đ)'}</th>
+                    <th className="py-3 px-3 text-center">{statusFilter === 'LIVE' ? 'Tiến độ' : 'TF (4đ)'}</th>
+                    <th className="py-3 px-3 text-center">{statusFilter === 'LIVE' ? 'Trạng thái' : 'Tổng điểm'}</th>
                     <th className="py-3 px-3 text-center">Rời tab</th>
-                    <th className="py-3 px-3 text-center">Thời gian nộp</th>
+                    <th className="py-3 px-3 text-center">{statusFilter === 'LIVE' ? 'Cập nhật' : 'Thời gian nộp'}</th>
                     <th className="py-3 px-3 text-center">Google Sheets</th>
                     <th className="py-3 px-3 text-center">Thao tác</th>
                   </tr>
@@ -575,7 +614,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                   {filteredResults.length === 0 ? (
                     <tr>
                       <td colSpan={12} className="py-8 text-center text-slate-400">
-                        Chưa có bài thi nào được nộp hoặc không khớp với bộ lọc.
+                        {statusFilter === 'LIVE' ? 'Không có học sinh nào đang làm bài.' : 'Chưa có bài thi nào được nộp hoặc không khớp với bộ lọc.'}
                       </td>
                     </tr>
                   ) : (
@@ -586,25 +625,57 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                         <td className="py-3 px-3 font-mono text-slate-600">{r.studentId}</td>
                         <td className="py-3 px-3 text-center font-bold text-blue-700">{r.className}</td>
                         <td className="py-3 px-3 text-center font-bold text-purple-700">{r.examCode}</td>
-                        <td className="py-3 px-3 text-center text-slate-700 font-medium">{r.mcqScore?.toFixed(2)}</td>
-                        <td className="py-3 px-3 text-center text-slate-700 font-medium">{r.tfScore?.toFixed(2)}</td>
-                        <td className="py-3 px-3 text-center">
-                          <span className={`px-2.5 py-1 rounded-md font-black text-sm ${
-                            (r.totalScore ?? 0) >= 8.0 ? 'bg-emerald-100 text-emerald-800' :
-                            (r.totalScore ?? 0) >= 5.0 ? 'bg-blue-100 text-blue-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
-                            {r.totalScore?.toFixed(2)}
-                          </span>
-                          {r.scoreAdjusted && (
-                            <span className="block text-[10px] text-amber-600 mt-0.5" title={r.scoreAdjustmentReason}>
-                              *Đã chỉnh
-                            </span>
-                          )}
-                        </td>
+                        
+                        {statusFilter === 'LIVE' ? (
+                          <>
+                            <td className="py-3 px-3 text-center text-slate-500 text-[11px]">
+                              {r.startTime ? new Date(r.startTime).toLocaleTimeString('vi-VN') : '—'}
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              <div className="flex flex-col items-center gap-1">
+                                <span className="text-[10px] font-bold text-slate-500">
+                                  {Object.keys(r.mcqAnswers || {}).length}/24 MCQ
+                                </span>
+                                <div className="w-16 h-1 bg-slate-100 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-blue-500 transition-all" 
+                                    style={{ width: `${(Object.keys(r.mcqAnswers || {}).length / 24) * 100}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-center">
+                              <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-bold text-[10px] animate-pulse">
+                                Đang làm bài...
+                              </span>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="py-3 px-3 text-center text-slate-700 font-medium">{r.mcqScore?.toFixed(2)}</td>
+                            <td className="py-3 px-3 text-center text-slate-700 font-medium">{r.tfScore?.toFixed(2)}</td>
+                            <td className="py-3 px-3 text-center">
+                              <span className={`px-2.5 py-1 rounded-md font-black text-sm ${
+                                (r.totalScore ?? 0) >= 8.0 ? 'bg-emerald-100 text-emerald-800' :
+                                (r.totalScore ?? 0) >= 5.0 ? 'bg-blue-100 text-blue-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                {r.totalScore?.toFixed(2)}
+                              </span>
+                              {r.scoreAdjusted && (
+                                <span className="block text-[10px] text-amber-600 mt-0.5" title={r.scoreAdjustmentReason}>
+                                  *Đã chỉnh
+                                </span>
+                              )}
+                            </td>
+                          </>
+                        )}
+
                         <td className="py-3 px-3 text-center">
                           {r.leaveTabCount > 0 ? (
-                            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">
+                            <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                              r.leaveTabCount >= 3 ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                            }`}>
                               {r.leaveTabCount} lần
                             </span>
                           ) : (
@@ -612,7 +683,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                           )}
                         </td>
                         <td className="py-3 px-3 text-center text-slate-500 text-[11px]">
-                          {r.submittedTime ? new Date(r.submittedTime).toLocaleTimeString('vi-VN') : '—'}
+                          {statusFilter === 'LIVE' 
+                            ? (r.submittedTime ? new Date(r.submittedTime).toLocaleTimeString('vi-VN') : 'Vừa xong')
+                            : (r.submittedTime ? new Date(r.submittedTime).toLocaleTimeString('vi-VN') : '—')
+                          }
                         </td>
                         <td className="py-3 px-3 text-center">
                           {r.syncedToGoogleSheets ? (
@@ -621,7 +695,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-slate-400 text-[11px]">
-                              Cục bộ
+                              {statusFilter === 'LIVE' ? 'Chờ nộp...' : 'Cục bộ'}
                             </span>
                           )}
                         </td>
@@ -712,6 +786,52 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Stats by Class Table */}
+          {stats.byClass && Object.keys(stats.byClass).length > 0 && (
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">
+                Thống kê chi tiết theo từng lớp
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                      <th className="py-2 px-3">Lớp</th>
+                      <th className="py-2 px-3 text-center">Sĩ số</th>
+                      <th className="py-2 px-3 text-center">Đã thi</th>
+                      <th className="py-2 px-3 text-center">Điểm TB</th>
+                      <th className="py-2 px-3 text-center">Tỷ lệ đạt</th>
+                      <th className="py-2 px-3">Tiến độ</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {Object.entries(stats.byClass).map(([cls, data]: [string, any]) => (
+                      <tr key={cls} className="hover:bg-slate-50/50">
+                        <td className="py-2.5 px-3 font-bold text-blue-700">{cls}</td>
+                        <td className="py-2.5 px-3 text-center font-medium text-slate-600">{data.total}</td>
+                        <td className="py-2.5 px-3 text-center font-bold text-slate-900">{data.completed}</td>
+                        <td className="py-2.5 px-3 text-center font-black text-slate-900">{data.avg}</td>
+                        <td className="py-2.5 px-3 text-center">
+                          <span className={`px-2 py-0.5 rounded font-bold ${data.passRate >= 80 ? 'text-emerald-600' : data.passRate >= 50 ? 'text-blue-600' : 'text-rose-600'}`}>
+                            {data.passRate}%
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 w-40">
+                          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full transition-all ${data.completed === data.total ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                              style={{ width: `${Math.round((data.completed / data.total) * 100)}%` }}
+                            ></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Score distribution histogram */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
@@ -827,18 +947,73 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                       </span>
                     </td>
                     <td className="py-2.5 px-3 text-center">
-                      <button
-                        onClick={() => handleDeleteStudent(s.studentId)}
-                        title="Xóa học sinh"
-                        className="p-1 rounded text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={async () => {
+                            const res = await apiClient.resetPasscode(s.studentId);
+                            if (res.success && res.passcode) {
+                              setStudentPasscodeModal({
+                                studentId: s.studentId,
+                                fullName: s.fullName,
+                                passcode: res.passcode
+                              });
+                            } else {
+                              alert('Lỗi: ' + (res.error || 'Không thể cấp mã'));
+                            }
+                          }}
+                          title="Cấp lại mã đăng nhập"
+                          className="p-1 rounded text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                        >
+                          <Lock className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteStudent(s.studentId)}
+                          title="Xóa học sinh"
+                          className="p-1 rounded text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL: HIỂN THỊ MÃ ĐĂNG NHẬP MỚI ================= */}
+      {studentPasscodeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-8 shadow-2xl border border-blue-200 text-center space-y-5 animate-in fade-in zoom-in duration-300">
+            <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <Lock className="w-8 h-8 text-blue-600" />
+            </div>
+            
+            <div className="space-y-1">
+              <h3 className="text-xl font-black text-slate-900">MÃ ĐĂNG NHẬP MỚI</h3>
+              <p className="text-sm text-slate-500">
+                Cấp cho học sinh: <strong>{studentPasscodeModal.fullName}</strong>
+              </p>
+            </div>
+
+            <div className="bg-slate-50 border-2 border-dashed border-blue-200 rounded-2xl p-6 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+              <div className="text-4xl font-black text-blue-700 tracking-widest font-mono">
+                {studentPasscodeModal.passcode}
+              </div>
+              <div className="text-[10px] text-slate-400 mt-2 uppercase font-bold tracking-tighter">
+                Vui lòng chép mã này cho học sinh
+              </div>
+            </div>
+
+            <button
+              onClick={() => setStudentPasscodeModal(null)}
+              className="w-full py-3 rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-all cursor-pointer shadow-lg active:scale-95"
+            >
+              Đã ghi lại - Đóng
+            </button>
           </div>
         </div>
       )}

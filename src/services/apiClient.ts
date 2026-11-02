@@ -168,6 +168,10 @@ export const apiClient = {
     expiresAt: string;
     durationMinutes: number;
     exam: any;
+    mcqAnswers?: any;
+    tfAnswers?: any;
+    flaggedQuestionIds?: string[];
+    leaveTabCount?: number;
     error?: string;
   }> {
     try {
@@ -688,6 +692,26 @@ export const apiClient = {
         return { success: true, stats: data.stats };
       }
       return { success: false, error: data?.error || 'Không thể tải số liệu thống kê' };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  },
+
+  // 20. Cấp lại mã đăng nhập cho học sinh
+  async resetPasscode(studentId: string): Promise<{ success: boolean; passcode?: string; error?: string }> {
+    try {
+      const res = await fetch('/api/admin/students/reset-passcode', {
+        method: 'POST',
+        headers: this.getAdminHeaders(),
+        body: JSON.stringify({ studentId }),
+        signal: AbortSignal.timeout(10000)
+      });
+
+      const data = await res.json().catch(() => null);
+      if (res.ok && data && data.success) {
+        return data;
+      }
+      return { success: false, error: data?.error || 'Không thể cấp lại mã' };
     } catch (err: any) {
       return { success: false, error: err.message };
     }

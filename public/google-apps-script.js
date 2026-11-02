@@ -214,9 +214,17 @@ function doPost(e) {
         }
       }
 
-      // Lưu chi tiết từng câu vào CHI_TIET_BAI_LAM
+      // Lưu chi tiết từng câu vào CHI_TIET_BAI_LAM (Idempotent: Xóa bản ghi cũ của lượt thi này nếu có)
       var chiTietSheet = ss.getSheetByName("CHI_TIET_BAI_LAM");
       if (chiTietSheet && data.details && data.details.length > 0) {
+        var detailValues = chiTietSheet.getDataRange().getValues();
+        // Duyệt ngược để xóa mà không làm lệch index
+        for (var dIdx = detailValues.length - 1; dIdx >= 1; dIdx--) {
+          if (detailValues[dIdx][0] === result.attemptId) {
+            chiTietSheet.deleteRow(dIdx + 1);
+          }
+        }
+
         var timeNow = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
         var detailRows = [];
         for (var k = 0; k < data.details.length; k++) {

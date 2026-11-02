@@ -51,6 +51,12 @@ export default function App() {
   const [activeExam, setActiveExam] = useState<any>(null);
   const [activeStartTime, setActiveStartTime] = useState<string>('');
   const [activeExpiresAt, setActiveExpiresAt] = useState<string>('');
+  const [activeResumedState, setActiveResumedState] = useState<{
+    mcqAnswers: any;
+    tfAnswers: any;
+    flaggedQuestionIds: string[];
+    leaveTabCount: number;
+  } | null>(null);
 
   // Result state after submission
   const [submissionResult, setSubmissionResult] = useState<any>(null);
@@ -89,6 +95,14 @@ export default function App() {
     setActiveExam(data.exam);
     setActiveStartTime(data.startTime);
     setActiveExpiresAt(data.expiresAt);
+    
+    // Pass along resumed state if available
+    setActiveResumedState({
+      mcqAnswers: data.mcqAnswers || {},
+      tfAnswers: data.tfAnswers || {},
+      flaggedQuestionIds: data.flaggedQuestionIds || [],
+      leaveTabCount: data.leaveTabCount || 0
+    });
 
     setShowStudentEntrance(false);
     setCurrentView('exam');
@@ -155,6 +169,7 @@ export default function App() {
             exam={activeExam}
             startTime={activeStartTime}
             expiresAt={activeExpiresAt}
+            resumedState={activeResumedState}
             onSubmitExam={handleSubmitExam}
           />
         )}

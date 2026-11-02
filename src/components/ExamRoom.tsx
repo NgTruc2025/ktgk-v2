@@ -45,6 +45,12 @@ interface ExamRoomProps {
   };
   startTime: string;
   expiresAt: string;
+  resumedState?: {
+    mcqAnswers: any;
+    tfAnswers: any;
+    flaggedQuestionIds: string[];
+    leaveTabCount: number;
+  } | null;
   onSubmitExam: (submissionData: {
     attemptId: string;
     examCode: string;
@@ -60,18 +66,19 @@ export const ExamRoom: React.FC<ExamRoomProps> = ({
   exam,
   startTime,
   expiresAt,
+  resumedState,
   onSubmitExam
 }) => {
   // Current active question index (0 to 23 are MCQ, 24 to 27 are TF)
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Answers state
-  const [mcqAnswers, setMcqAnswers] = useState<{ [qId: string]: 'A' | 'B' | 'C' | 'D' }>({});
-  const [tfAnswers, setTfAnswers] = useState<{ [qId: string]: { [item: string]: boolean } }>({});
-  const [flaggedIds, setFlaggedIds] = useState<string[]>([]);
+  // Answers state - initialize from resumed state if available
+  const [mcqAnswers, setMcqAnswers] = useState<{ [qId: string]: 'A' | 'B' | 'C' | 'D' }>(resumedState?.mcqAnswers || {});
+  const [tfAnswers, setTfAnswers] = useState<{ [qId: string]: { [item: string]: boolean } }>(resumedState?.tfAnswers || {});
+  const [flaggedIds, setFlaggedIds] = useState<string[]>(resumedState?.flaggedQuestionIds || []);
 
   // Monitoring & anti-cheat
-  const [leaveTabCount, setLeaveTabCount] = useState(0);
+  const [leaveTabCount, setLeaveTabCount] = useState(resumedState?.leaveTabCount || 0);
   const [showBlurWarning, setShowBlurWarning] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastSavedTime, setLastSavedTime] = useState<string>('Vừa mới');
