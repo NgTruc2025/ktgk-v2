@@ -21,8 +21,8 @@
  */
 
 // KHÓA BẢO MẬT ĐỒNG BỘ GIỮA SERVER VÀ GOOGLE SHEETS
-// Hãy thay đổi chuỗi này để bảo mật theo ý bạn
-var SHARED_SECRET_KEY = "GIA_RAI_TIN12_SECURE_2026";
+// Hãy thay đổi chuỗi này trùng khớp với GOOGLE_SHEET_SECRET_KEY trên server của bạn
+var SHARED_SECRET_KEY = "YOUR_GOOGLE_SHEET_SECRET_KEY_HERE";
 
 /**
  * 1. Hàm tự động khởi tạo 7 Worksheet với tiêu đề chuẩn

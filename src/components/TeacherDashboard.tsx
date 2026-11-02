@@ -97,10 +97,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
       if (resResults.success) setResults(resResults.results || []);
       if (resStudents.success) setStudents(resStudents.students || []);
       if (resExams.success) setExams(resExams.exams || []);
-      if (resConfig.success) {
+      if (resConfig.success && resConfig.config) {
         setConfig(resConfig.config);
         setTestUrl(resConfig.config.googleSheetWebAppUrl || '');
-        setTestKey(resConfig.config.googleSheetSecretKey || 'GIA_RAI_TIN12_SECURE_2026');
+        setTestKey(resConfig.config.googleSheetSecretKey || '');
       }
       if (resLogs.success) setLogs(resLogs.logs || []);
       if (resStats.success) setStats(resStats.stats);
@@ -108,6 +108,18 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
       console.error('Lỗi nạp dữ liệu quản trị:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Logout
+  const handleLogout = async () => {
+    if (window.confirm('Bạn có muốn đăng xuất khỏi hệ thống quản trị không?')) {
+      try {
+        await apiClient.logout();
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+      onLogout();
     }
   };
 
@@ -206,7 +218,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const handleSaveConfig = async (updated: Partial<ExamConfig>) => {
     try {
       const data = await apiClient.saveAdminConfig(updated);
-      if (data.success) {
+      if (data.success && data.config) {
         setConfig(data.config);
         alert('Đã cập nhật cấu hình thành công!');
       }
@@ -222,7 +234,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
     try {
       const data = await apiClient.syncAllToSheets();
       if (data.success) {
-        setSyncAllMsg(data.message);
+        setSyncAllMsg(data.message || 'Đồng bộ thành công.');
         fetchAllData();
       } else {
         setSyncAllMsg('Đồng bộ thất bại: ' + ((data as any).error || 'Kiểm tra lại kết nối'));
@@ -383,7 +395,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           </button>
 
           <button
-            onClick={onLogout}
+            onClick={handleLogout}
             className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />

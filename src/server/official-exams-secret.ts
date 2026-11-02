@@ -1,6 +1,6 @@
-import { ExamVersion } from '../types/exam';
+import { ExamVersion, MCQQuestion, TFQuestion } from '../types/exam.ts';
 
-export const OFFICIAL_EXAMS: ExamVersion[] = [
+export const OFFICIAL_EXAMS_SECRET: ExamVersion[] = [
   {
     "code": "101",
     "title": "Đề kiểm tra Giữa học kì I - Tin học 11 (KNTT) - Mã đề 101",
@@ -3094,3 +3094,45 @@ export const OFFICIAL_EXAMS: ExamVersion[] = [
     ]
   }
 ];
+
+
+/**
+ * HELPER: Strip answers before sending questions to students
+ */
+export function getStudentStrippedExamSecret(code: string, durationMinutes = 45) {
+  const exam = OFFICIAL_EXAMS_SECRET.find(e => e.code === code) || OFFICIAL_EXAMS_SECRET[0];
+  return {
+    code: exam.code,
+    title: exam.title,
+    grade: exam.grade,
+    subject: exam.subject,
+    durationMinutes: durationMinutes || exam.durationMinutes,
+    totalPoints: exam.totalPoints,
+    mcqQuestions: exam.mcqQuestions.map((q: MCQQuestion) => ({
+      id: q.id,
+      number: q.number,
+      text: q.text,
+      options: q.options,
+      points: q.points,
+      topic: q.topic
+    })),
+    tfQuestions: exam.tfQuestions.map((q: TFQuestion) => ({
+      id: q.id,
+      number: q.number,
+      context: q.context,
+      topic: q.topic,
+      pointsBreakdown: q.pointsBreakdown,
+      items: q.items.map(item => ({
+        id: item.id,
+        text: item.text
+      }))
+    }))
+  };
+}
+
+/**
+ * HELPER: Get full official exam with answers (Teacher only)
+ */
+export function getOfficialExamSecret(code: string): ExamVersion {
+  return OFFICIAL_EXAMS_SECRET.find(e => e.code === code) || OFFICIAL_EXAMS_SECRET[0];
+}
