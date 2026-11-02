@@ -1,0 +1,288 @@
+{
+  "config": {
+    "academicYear": "2026-2027",
+    "schoolName": "Trường THPT Giá Rai – Phân hiệu Nguyễn Trung Trực",
+    "examTitle": "KIỂM TRA GIỮA HỌC KỲ I - NĂM HỌC 2026 - 2027",
+    "subject": "Tin học 11",
+    "durationMinutes": 45,
+    "isOpen": true,
+    "allowRetake": false,
+    "showScoreImmediately": false,
+    "showCorrectAnswersAfterSubmit": false,
+    "allowedGrades": [
+      10,
+      11,
+      12
+    ],
+    "allowedExamCodes": [
+      "101",
+      "102",
+      "103",
+      "104"
+    ],
+    "googleSheetWebAppUrl": "https://script.google.com/macros/s/AKfycbxkJfIHGDafc0FdPpWMeMgpCJN8L4yt7hFwjmp-gGB7TRvuj6jqXsrJ1x2TzL6vOkVF/exec",
+    "googleSheetSecretKey": "GIA_RAI_TIN12_SECURE_2026",
+    "lastSyncTime": "2026-10-28T02:49:22.793Z"
+  },
+  "students": [
+    {
+      "stt": 1,
+      "studentId": "HS110101",
+      "fullName": "Nguyễn Văn An",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 2,
+      "studentId": "HS110102",
+      "fullName": "Trần Thị Bình",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 3,
+      "studentId": "HS110103",
+      "fullName": "Lê Hoàng Cường",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 4,
+      "studentId": "HS110104",
+      "fullName": "Phạm Minh Đức",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 5,
+      "studentId": "HS110105",
+      "fullName": "Võ Thị Ngọc Dung",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 6,
+      "studentId": "HS110106",
+      "fullName": "Hoàng Quốc Dũng",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 7,
+      "studentId": "HS110107",
+      "fullName": "Đặng Thảo Hằng",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 8,
+      "studentId": "HS110108",
+      "fullName": "Bùi Gia Huy",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 9,
+      "studentId": "HS110109",
+      "fullName": "Lâm Tuấn Kiệt",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 10,
+      "studentId": "HS110110",
+      "fullName": "Trương Mỹ Linh",
+      "className": "11A1",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 11,
+      "studentId": "HS110201",
+      "fullName": "Huỳnh Hải Nam",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 12,
+      "studentId": "HS110202",
+      "fullName": "Đỗ Kim Oanh",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 13,
+      "studentId": "HS110203",
+      "fullName": "Ngô Hồng Phúc",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 14,
+      "studentId": "HS110204",
+      "fullName": "Vũ Như Quỳnh",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 15,
+      "studentId": "HS110205",
+      "fullName": "Dương Tấn Sang",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 16,
+      "studentId": "HS110206",
+      "fullName": "Lý Diễm My",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 17,
+      "studentId": "HS110207",
+      "fullName": "Trịnh Thanh Tùng",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 18,
+      "studentId": "HS110208",
+      "fullName": "Mai Phương Uyên",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 19,
+      "studentId": "HS110209",
+      "fullName": "Phan Tấn Vinh",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 20,
+      "studentId": "HS110210",
+      "fullName": "Châu Thảo Vy",
+      "className": "11A2",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 21,
+      "studentId": "HS110301",
+      "fullName": "Trần Khánh An",
+      "className": "11A3",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 22,
+      "studentId": "HS110302",
+      "fullName": "Nguyễn Tấn Đạt",
+      "className": "11A3",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 23,
+      "studentId": "HS110303",
+      "fullName": "Lê Thùy Trang",
+      "className": "11A3",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 24,
+      "studentId": "HS110304",
+      "fullName": "Hồ Quang Hiếu",
+      "className": "11A3",
+      "grade": 11,
+      "status": "Chưa thi"
+    },
+    {
+      "stt": 25,
+      "studentId": "HS110305",
+      "fullName": "Nguyễn Bích Thủy",
+      "className": "11A3",
+      "grade": 11,
+      "status": "Chưa thi"
+    }
+  ],
+  "attempts": {},
+  "logs": [
+    {
+      "id": "log_1793184206558_hnr4",
+      "timestamp": "2026-10-28T10:43:26.558Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "Giáo viên đăng nhập vào hệ thống quản trị",
+      "status": "INFO"
+    },
+    {
+      "id": "log_1793184194842_6tcs",
+      "timestamp": "2026-10-28T10:43:14.842Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "Giáo viên đã xác thực mật khẩu và kích hoạt MỞ ĐỀ THI",
+      "status": "SUCCESS"
+    },
+    {
+      "id": "log_1793184181578_2nmu",
+      "timestamp": "2026-10-28T10:43:01.578Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "Giáo viên đã xác thực mật khẩu và kích hoạt KHÓA ĐỀ THI CUỐI BUỔI",
+      "status": "WARNING"
+    },
+    {
+      "id": "log_1793183287196_07hj",
+      "timestamp": "2026-10-28T10:28:07.196Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "Giáo viên đã xác thực mật khẩu và kích hoạt MỞ ĐỀ THI",
+      "status": "SUCCESS"
+    },
+    {
+      "id": "log_1793159966924_3ubu",
+      "timestamp": "2026-10-28T03:59:26.924Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "Giáo viên đã xác thực mật khẩu và kích hoạt MỞ ĐỀ THI",
+      "status": "SUCCESS"
+    },
+    {
+      "id": "log_1793159954468_ylqp",
+      "timestamp": "2026-10-28T03:59:14.468Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "Giáo viên đã xác thực mật khẩu và kích hoạt KHÓA ĐỀ THI CUỐI BUỔI",
+      "status": "WARNING"
+    },
+    {
+      "id": "log_1793155762793",
+      "timestamp": "2026-10-28T02:49:22.793Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "KHÓA ĐỀ THI CUỐI BUỔI: Đã đóng kỳ kiểm tra Tin học 11 và liên kết thành công với Google Sheets KTGK11",
+      "status": "SUCCESS"
+    },
+    {
+      "id": "log_1793061632651",
+      "timestamp": "2026-10-27T00:40:32.651Z",
+      "eventType": "CONFIG_UPDATE",
+      "details": "Chuyển đổi hoàn tất sang đề kiểm tra Giữa học kỳ I - Môn Tin học 11 (Mã đề 101, 102, 103, 104)",
+      "status": "SUCCESS"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "summary":  "Kế hoạch kỹ thuật nâng cấp toàn diện KTTX11 PRO v2.0 cho Trường THPT Giá Rai – Phân hiệu Nguyễn Trung Trực:\n- Rà soát hiện trạng lỗ hổng bảo mật (lộ đáp án frontend, localStorage, hardcoded admin secret, file JSON).\n- Kiến trúc Firebase Firestore và Backend bảo mật phân quyền Zero-Trust.\n- Chuẩn giao diện Cổng thông tin Giáo dục Cà Mau (Deep Navy & Cyan, tương phản cao phòng máy).\n- Quy trình chống gian lận nghiêm ngặt và hàng đợi đồng bộ Google Sheets tự động.\n- Kế hoạch chia 5 giai đoạn độc lập có kiểm thử chi tiết.",
+  "updatedAt":  "2026-11-02T01:43:19.091262259Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Kiểm Tra Giữa Kỳ I - Tin Học 11 - Trường THPT Giá Rai - PH NTT",
+  "description": "Hệ thống kiểm tra trực tuyến Giữa Học kỳ I môn Tin học - THPT Giá Rai (Phân hiệu Nguyễn Trung Trực) với chấm điểm tự động, chống gian lận, đồng bộ Google Sheets và bảng điều khiển giáo viên.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
